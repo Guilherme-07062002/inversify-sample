@@ -1,6 +1,6 @@
 import { CreateUserController } from './interface';
 import { CreateUserUsecase, USECASE_TYPES } from './application';
-import { FakeUserRepository } from './infra';
+import { AnotherFakeUserRepository, FakeUserRepository } from './infra';
 import { Container } from 'inversify';
 import { REPOSITORY_TYPES, UserRepository } from './domain/repositories';
 import express, { Request, Response } from 'express';
@@ -14,7 +14,7 @@ const container = new Container();
 
 const configDependencies = () => {
   container.bind<CreateUserUsecase>(USECASE_TYPES.CreateUserUseCase).to(CreateUserUsecase);
-  container.bind<UserRepository>(REPOSITORY_TYPES.UserRepository).to(FakeUserRepository);
+  container.bind<UserRepository>(REPOSITORY_TYPES.UserRepository).to(AnotherFakeUserRepository);
 }
 
 app.post('/users', async (req: Request, res: Response) => {
