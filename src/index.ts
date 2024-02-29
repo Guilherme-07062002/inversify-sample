@@ -14,7 +14,8 @@ const container = new Container();
 
 const configDependencies = () => {
   container.bind<CreateUserUsecase>(USECASE_TYPES.CreateUserUseCase).to(CreateUserUsecase);
-  container.bind<UserRepository>(REPOSITORY_TYPES.UserRepository).to(AnotherFakeUserRepository);
+  container.bind<UserRepository>(REPOSITORY_TYPES.UserRepository).to(FakeUserRepository);
+  // container.bind<UserRepository>(REPOSITORY_TYPES.UserRepository).to(AnotherFakeUserRepository);
 }
 
 app.post('/users', async (req: Request, res: Response) => {
