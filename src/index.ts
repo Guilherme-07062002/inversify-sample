@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import http from 'http';
 
 const app = express();
@@ -14,7 +14,9 @@ app.get('/', (req, res) => {
   });
 })
 
-app.post('/users', async (req, res) => {
+app.use(express.json());
+
+app.post('/users', async (req: Request, res: Response) => {
   const userRepository = new FakeUserRepository();
   const createUserUsecase = new CreateUserUsecase(userRepository);
   const createUserController = new CreateUserController(createUserUsecase);
