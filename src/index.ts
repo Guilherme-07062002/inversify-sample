@@ -1,28 +1,34 @@
+import { CreateUserController } from './interface';
+import { CreateUserUsecase, USECASE_TYPES } from './application';
+import { FakeUserRepository } from './infra';
+import { Container } from 'inversify';
+import { REPOSITORY_TYPES, UserRepository } from './domain/repositories';
 import express, { Request, Response } from 'express';
 import http from 'http';
-
 const app = express();
 const server = http.createServer(app);
 
-import { CreateUserController } from './interface';
-import { CreateUserUsecase } from './application';
-import { FakeUserRepository } from './infra';
+app.use(express.json());
+
+const container = new Container();
+
+const configDependencies = () => {
+  container.bind<CreateUserUsecase>(USECASE_TYPES.CreateUserUseCase).to(CreateUserUsecase);
+  container.bind<UserRepository>(REPOSITORY_TYPES.UserRepository).to(FakeUserRepository);
+}
+
+app.post('/users', async (req: Request, res: Response) => {
+  configDependencies();
+  const createUserController = container.resolve<CreateUserController>(CreateUserController);
+  const result = await createUserController.handle(req);
+
+  res.status(result.status).send(result.body);
+})
 
 app.get('/', (req, res) => {
   res.send({
     message: 'Hello World!',
   });
-})
-
-app.use(express.json());
-
-app.post('/users', async (req: Request, res: Response) => {
-  const userRepository = new FakeUserRepository();
-  const createUserUsecase = new CreateUserUsecase(userRepository);
-  const createUserController = new CreateUserController(createUserUsecase);
-  const result = await createUserController.handle(req);
-
-  res.status(result.status).send(result.body);
 })
 
 server.listen(3000, () => {
